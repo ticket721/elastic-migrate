@@ -27,8 +27,8 @@ const getClientOptions = host => {
     options.awsConfig = new AWS.Config({
       region: process.env.ELASTICSEARCH_REGION,
       credentials: new AWS.Credentials({
-        accessKeyId: process.env.ELASTICSEARCH_ACCESS_KEY,
-        secretAccessKey: process.env.ELASTICSEARCH_SECRET_KEY,
+	accessKeyId: process.env.ELASTICSEARCH_ACCESS_KEY,
+	secretAccessKey: process.env.ELASTICSEARCH_SECRET_KEY,
       }),
     });
   }
@@ -82,7 +82,7 @@ const getClient = () => {
 const getHostMigrations = async () => {
   const {hits: {hits}} = await getClient().search({
     index: elasticMigrateMigrationsIndexName,
-    type: '_doc',
+    type: elasticMigrateMigrationsIndexName,
     body: {},
     size: 200,
   });
@@ -92,9 +92,9 @@ const getHostMigrations = async () => {
 const getLocalMigrations = async () => {
   const files = (await readdir(path.resolve('./migrations')))
   return files.map(item => {
-      const [filename, version, description] = /(\d*)\_(.*).js/gi.exec(item);
-      return {description, version, filepath: path.resolve('./migrations', filename)};
-    })
+    const [filename, version, description] = /(\d*)\_(.*).js/gi.exec(item);
+    return {description, version, filepath: path.resolve('./migrations', filename)};
+  })
     .sort((a, b) => a.version.localeCompare(b.version));
 };
 
@@ -125,18 +125,20 @@ const createMigrationsIndex = async () => getClient().indices.create({
   index: elasticMigrateMigrationsIndexName,
   body: {
     mappings: {
-      properties: {
-        description: {
-          type: "text"
-        },
-        version: {
-          type: "date",
-          format: "yyyyMMddHHmmss"
-        },
-        migratedAt: {
-          type: "date",
-          format: "epoch_millis"
-        }
+      [elasticMigrateMigrationsIndexName]: {
+	properties: {
+	  description: {
+	    type: "text"
+	  },
+	  version: {
+	    type: "date",
+	    format: "yyyyMMddHHmmss"
+	  },
+	  migratedAt: {
+	    type: "date",
+	    format: "epoch_millis"
+	  }
+	}
       }
     }
   }

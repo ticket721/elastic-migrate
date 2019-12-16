@@ -17,16 +17,31 @@ class ElasticMigration {
     throw new Error("Not implemented");
   }
 
-  async createIndex(indexName, settings) {
+  async createIndex(indexName, keyspaceName) {
     this.log(`creating index=${indexName}`);
     await this.client.indices.create({
       index: indexName,
-      body: settings,
+      body: {
+        settings: {
+          keyspace: keyspaceName
+        }
+      },
     });
-    return  this.client.indices.refresh({
+    return this.client.indices.refresh({
       index: indexName,
     });
   }
+
+  async putMapping(indexName, mappingName, mappingBody) {
+    this.log(`putting mapping=${indexName}:${mappingName}`);
+    return this.client.indices.putMapping({
+      index: indexName,
+      type: mappingName,
+      body: mappingBody
+    });
+  }
+
+
   async removeIndex(indexName) {
     this.log(`removing index=${indexName}`);
     return  this.client.indices.delete({ index: indexName });
