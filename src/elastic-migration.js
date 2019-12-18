@@ -41,6 +41,36 @@ class ElasticMigration {
     });
   }
 
+  async putSettings(indexName, settings) {
+    this.log(`putting index settings=${indexName}`);
+    return this.client.indices.putSettings({
+      index: indexName,
+      body: settings
+    });
+  }
+
+  async openIndex(indexName) {
+    this.log(`opening index settings=${indexName}`);
+    return this.client.indices.open({
+      index: indexName
+    });
+  }
+
+  async closeIndex(indexName) {
+    this.log(`closing index settings=${indexName}`);
+    return this.client.indices.open({
+      index: indexName
+    });
+  }
+
+
+  async putSettings(indexName, settings) {
+    this.log(`putting index settings=${indexName}`);
+    return this.client.indices.putSettings({
+      index: indexName,
+      body: settings
+    });
+  }
 
   async removeIndex(indexName) {
     this.log(`removing index=${indexName}`);
